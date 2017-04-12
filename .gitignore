@@ -1,0 +1,5 @@
+# PyCharm Idea folder
+.idea/
+
+# Python Compiled folder
+__pycache__/
