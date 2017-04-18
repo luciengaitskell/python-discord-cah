@@ -139,8 +139,7 @@ class SeverGame(cah.Game):
         print(self.player_cards)
 
     async def start_tzar_select_mode(self):
-        list_cards = "Question: `{}`".format(self.curr_question[1])
-        list_cards += "\n Choose one card: ```"
+        list_cards = "\n Choose one card: ```"
         for i, ck in enumerate(self.player_cards.keys()):
             list_cards += "\n{}: {}".format(i, self.player_cards[ck])
         list_cards += "\n```"
