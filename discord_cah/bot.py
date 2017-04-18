@@ -11,6 +11,8 @@ MIN_PLAYERS = 2
 
 
 class SeverGame(cah.Game):
+    new_round_message = ".\n\n----------------NEW ROUND----------------"
+
     def __init__(self, client, channel_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -187,6 +189,10 @@ class SeverGame(cah.Game):
         await self.client.send_message(discord.Object(id=self.channel_id), question_msg)
 
         self.card_tzar = random.choice(self.players)
+
+        # Send new round message content
+        await self.client.send_message(discord.Object(id=self.channel_id), self.new_round_message)
+        await self.message_all_players(self.new_round_message)
 
         await self.send_player_cards()
 
