@@ -185,14 +185,15 @@ class SeverGame(cah.Game):
 
         self.get_new_question()
 
-        question_msg = "The Question is: `{}`".format(self.curr_question[1])
-        await self.client.send_message(discord.Object(id=self.channel_id), question_msg)
-
         self.card_tzar = random.choice(self.players)
 
         # Send new round message content
         await self.client.send_message(discord.Object(id=self.channel_id), self.new_round_message)
         await self.message_all_players(self.new_round_message)
+
+        initial_msg = "'{}' is the card tzar.\n".format(self.card_tzar.id.name)
+        initial_msg += "The Question is: `{}`".format(self.curr_question[1])
+        await self.message_all_players(initial_msg)
 
         await self.send_player_cards()
 
