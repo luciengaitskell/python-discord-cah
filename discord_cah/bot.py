@@ -77,6 +77,7 @@ class SeverGame(cah.Game):
         return True
 
     async def get_choice_from_message(self, msg):
+        # Get content of the message and strip un-needed characters
         content = msg.content.strip(" ").strip("\n")
 
         try:
@@ -105,9 +106,6 @@ class SeverGame(cah.Game):
         # Exit if the author is this client or not a player:
         if author == self.client.user or not any(x.id == author for x in self.players):
             return
-
-        # Get content of the message and strip un-needed characters
-        content = msg.content.strip(" ").strip("\n")
 
         # Get first player in list with the message author object as its id:
         ply = [x for x in self.players if x.id == msg.author][0]
