@@ -12,6 +12,7 @@ MIN_PLAYERS = 2
 
 class SeverGame(cah.Game):
     new_round_message = ".\n\n----------------NEW ROUND----------------"
+    player_chose_message_content_initial = "Here's who has submitted so far:```"
 
     def __init__(self, client, channel_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -22,6 +23,9 @@ class SeverGame(cah.Game):
         self.on_message = self.client.event(self.on_message)
 
         self.tzar_select_mode = False
+
+        self.player_chose_message = None
+        self.player_chose_message_content = None
 
     def dereg_on_message(self):
         delattr(self.client, self.on_message.__name__)
@@ -136,6 +140,9 @@ class SeverGame(cah.Game):
             await self.start_tzar_select_mode()
             self.tzar_select_mode = True
 
+        self.player_chose_message_content += "\n" + author.name
+        await self.client.edit_message(self.player_chose_message, new_content=self.player_chose_message_content + "```")
+
         print(self.player_cards)
 
     async def start_tzar_select_mode(self):
@@ -194,6 +201,10 @@ class SeverGame(cah.Game):
         initial_msg = "'{}' is the card tzar.\n".format(self.card_tzar.id.name)
         initial_msg += "The Question is: `{}`".format(self.curr_question[1])
         await self.message_all_players(initial_msg)
+
+        self.player_chose_message_content = self.player_chose_message_content_initial
+        self.player_chose_message = await self.client.send_message(discord.Object(id=self.channel_id),
+                                                                   self.player_chose_message_content + "\nNone...```")
 
         await self.send_player_cards()
 
