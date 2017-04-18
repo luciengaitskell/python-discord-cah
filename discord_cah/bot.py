@@ -144,7 +144,7 @@ class SeverGame(cah.Game):
         list_cards = "Question: `{}`".format(self.curr_question[1])
         list_cards += "\n Choose one card: ```"
         for i, ck in enumerate(self.player_cards.keys()):
-            list_cards += "{}: {}".format(i, self.player_cards[ck])
+            list_cards += "\n{}: {}".format(i, self.player_cards[ck])
         list_cards += "\n```"
         await self.client.send_message(self.card_tzar.id, list_cards)
         pass
