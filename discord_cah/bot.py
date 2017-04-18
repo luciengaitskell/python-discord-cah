@@ -131,7 +131,7 @@ class SeverGame(cah.Game):
 
         ply_test_arr = self.players[:]
         del(ply_test_arr[ply_test_arr.index(self.card_tzar)])
-        if all(x in ply_test_arr for x in list(self.player_cards.keys())):
+        if all(x in list(self.player_cards.keys()) for x in ply_test_arr):
             print("EVERYONE")
             await self.start_tzar_select_mode()
             self.tzar_select_mode = True
