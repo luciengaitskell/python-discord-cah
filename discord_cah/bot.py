@@ -50,14 +50,15 @@ class SeverGame(cah.Game):
         self.deal_cards()
 
         for p in self.players:
-            if p == self.card_tzar:
-                continue
             u = p.id
 
-            msg = "```\n"
-            for i, c in enumerate(p.cards):
-                msg += str(i) + ". " + str(p.cards[c]) + "\n"
-            msg += "```"
+            if p == self.card_tzar:
+                msg = "You are the card tzar. Please wait until all players choose their cards."
+            else:
+                msg = "```\n"
+                for i, c in enumerate(p.cards):
+                    msg += str(i) + ". " + str(p.cards[c]) + "\n"
+                msg += "```"
             await self.client.send_message(u, content=msg)
 
     @staticmethod
