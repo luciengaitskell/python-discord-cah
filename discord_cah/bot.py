@@ -24,6 +24,10 @@ class SeverGame(cah.Game):
     def dereg_on_message(self):
         delattr(self.client, self.on_message.__name__)
 
+    async def message_all_players(self, msg_content):
+        for p in self.players:
+            await self.client.send_message(p.id, msg_content)
+
     async def ask_and_wait(self):
         match_join_message = ("It's time to play some CAH!" +
                               " React to this message, if you would like to play.")
