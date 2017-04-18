@@ -167,7 +167,7 @@ class SeverGame(cah.Game):
 
         self.player_cards = {}
 
-        await self.client.send_message(discord.Object(id=self.channel_id), "Winner: `{}`.".format(crd[1]))
+        await self.message_all_players("Winner '{}': `{}`.".format(plyr.id.name, crd[1]))
 
         await self.start_round()
 
