@@ -171,7 +171,7 @@ class SeverGame(cah.Game):
             return
 
         plyr = list(self.player_cards.keys())[choice]
-        crd = list(self.player_cards.items())[choice]
+        crd = self.player_cards[plyr]
 
         del(self.player_cards[plyr])
 
@@ -179,7 +179,7 @@ class SeverGame(cah.Game):
 
         self.player_cards = {}
 
-        await self.message_all_players("Winner '{}': `{}`.".format(plyr.id.name, crd[1]))
+        await self.message_all_players("Winner '{}': `{}`.".format(plyr.id.name, crd))
 
         await self.start_round()
 
