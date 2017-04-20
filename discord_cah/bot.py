@@ -15,13 +15,14 @@ class SeverGame(cah.Game):
     new_round_message = ".\n\n----------------NEW ROUND----------------"
     player_chose_message_content_initial = "Here's who has submitted so far:```"
 
-    def __init__(self, client, channel_id, *args, **kwargs):
+    def __init__(self, client, channel_id, reg_msg_method=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.client = client
         self.channel_id = channel_id
 
-        self.on_message = self.client.event(self.on_message)
+        if reg_msg_method:
+            self.on_message = self.client.event(self.on_message)
 
         self.tzar_select_mode = False
 
