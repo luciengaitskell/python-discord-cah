@@ -143,7 +143,10 @@ class SeverGame(cah.Game):
             self.tzar_select_mode = True
 
         self.player_chose_message_content += "\n" + author.name
-        await self.client.edit_message(self.player_chose_message, new_content=self.player_chose_message_content + "```")
+        try:
+            await self.client.edit_message(self.player_chose_message, new_content=self.player_chose_message_content + "```")
+        except discord.errors.NotFound:
+            print("Error updating player list message.")
 
         print(self.player_cards)
 
