@@ -4,6 +4,7 @@ import cah
 import time
 import math
 import random
+import asyncio
 
 DEBUG = True
 
@@ -49,7 +50,7 @@ class SeverGame(cah.Game):
             if not old_wait_left == math.floor(wait_left / wait_update_del):
                 old_wait_left = math.floor(wait_left / wait_update_del)
                 msg = await self.client.edit_message(msg, new_content=match_join_message + " T-" + str(math.ceil(wait_left)))
-            time.sleep(0.5)
+            asyncio.sleep(0.5)
 
             if wait_left <= 0:
                 break
@@ -214,7 +215,7 @@ class SeverGame(cah.Game):
 
         while (time.time()-start_time)<wait_time and all(x in self.players for x in list(self.player_cards.keys())):
             print("wait")
-            time.sleep(0.2)'''
+            asyncio.sleep(0.2)'''
         print("finish")
 
     async def run(self):
