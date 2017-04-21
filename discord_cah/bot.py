@@ -125,8 +125,13 @@ class SeverGame(cah.Game):
         if choice is None:
             return
 
-        # Get card_content and card_id:
-        card_id = list(ply.cards.keys())[choice]
+        try:
+            # Get card_content and card_id:
+            card_id = list(ply.cards.keys())[choice]
+        except IndexError:
+            await self.client.send_message(msg.channel, "Out of range. Please try again.")
+            return
+
         card_content = ply.select_card(card_id)
 
         # Tell user what card was selected:
@@ -173,7 +178,12 @@ class SeverGame(cah.Game):
         if choice is None:
             return
 
-        plyr = list(self.player_cards.keys())[choice]
+        try:
+            plyr = list(self.player_cards.keys())[choice]
+        except IndexError:
+            await self.client.send_message(msg.channel, "Out of range. Please try again.")
+            return
+
         crd = self.player_cards[plyr]
 
         del(self.player_cards[plyr])
