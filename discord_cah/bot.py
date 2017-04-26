@@ -48,7 +48,11 @@ class SeverGame(cah.Game):
         old_wait_left = None
         while True:
             wait_left = wait_amt - (time.time() - wait_start)
+
+            # Triggers if the time block has changed (each are "wait_update_del" in size)
+            #   so the timer should be updated:
             if not old_wait_left == math.floor(wait_left / wait_update_del):
+                # Update the current time block:
                 old_wait_left = math.floor(wait_left / wait_update_del)
                 msg = await self.client.edit_message(msg, new_content=match_join_message + " T-" + str(math.ceil(wait_left)))
             await asyncio.sleep(wait_update_del)
