@@ -144,13 +144,6 @@ class SeverGame(cah.Game):
         # Add card to player_cards dict:
         self.player_cards[ply] = card_content
 
-        ply_test_arr = self.players[:]
-        del(ply_test_arr[ply_test_arr.index(self.card_tzar)])
-        if all(x in list(self.player_cards.keys()) for x in ply_test_arr):
-            print("EVERYONE")
-            await self.start_tzar_select_mode()
-            self.tzar_select_mode = True
-
         self.player_chose_message_content += "\n" + author.name
         try:
             await self.client.edit_message(self.player_chose_message, new_content=self.player_chose_message_content + "```")
@@ -227,13 +220,19 @@ class SeverGame(cah.Game):
 
         await self.send_player_cards()
 
-        '''
         start_time = time.time()
         wait_time = 30  # seconds
 
-        while (time.time()-start_time)<wait_time and all(x in self.players for x in list(self.player_cards.keys())):
+        ply_test_arr = self.players[:]
+        del (ply_test_arr[ply_test_arr.index(self.card_tzar)])
+        while ((time.time()-start_time) < wait_time and
+                not all(x in list(self.player_cards.keys()) for x in ply_test_arr)):
             print("wait")
-            await asyncio.sleep(0.2)'''
+            await asyncio.sleep(2)
+
+        print("EVERYONE")
+        await self.start_tzar_select_mode()
+        self.tzar_select_mode = True
         print("finish")
 
     async def run(self):
