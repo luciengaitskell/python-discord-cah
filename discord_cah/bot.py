@@ -51,7 +51,7 @@ class SeverGame(cah.Game):
             if not old_wait_left == math.floor(wait_left / wait_update_del):
                 old_wait_left = math.floor(wait_left / wait_update_del)
                 msg = await self.client.edit_message(msg, new_content=match_join_message + " T-" + str(math.ceil(wait_left)))
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(wait_update_del)
 
             if wait_left <= 0:
                 break
