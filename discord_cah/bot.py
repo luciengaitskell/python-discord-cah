@@ -237,6 +237,10 @@ class SeverGame(cah.Game):
             print("wait")
             await asyncio.sleep(2)
 
+        if len(self.player_cards) == 0:
+            await self.message_all_players("No cards were submitted! Leaving.")
+            return
+
         print("EVERYONE")
         await self.start_tzar_select_mode()
         self.tzar_select_mode = True
