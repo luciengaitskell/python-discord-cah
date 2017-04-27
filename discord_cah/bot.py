@@ -264,3 +264,15 @@ class SeverGame(cah.Game):
             return
 
         await self.start_round()
+
+    @classmethod
+    def create_session(cls, client, invoke_msg):
+        """Create game session from a channel."""
+        channel = invoke_msg.channel
+
+        if type(channel) == discord.channel.PrivateChannel:
+            client.send_message(invoke_msg.channel, "I'm afraid you can't start a fantastical game by yourself. Sorry.")
+        else:
+            g = cls(client, invoke_msg.channel.id, reg_msg_method=False)
+        client.loop.create_task(g.run())
+        return g
