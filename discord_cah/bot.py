@@ -153,15 +153,20 @@ class SeverGame(cah.Game):
         print(self.player_cards)
 
     async def start_tzar_select_mode(self):
+        are_cards = False
         # Notify of tzar mode
         await self.message_all_players("Now awaiting tzar card selection.")
 
         list_cards = "\n Choose one card: ```"
         for i, ck in enumerate(self.player_cards.keys()):
+            are_cards = True
             list_cards += "\n{}: {}".format(i, self.player_cards[ck])
         list_cards += "\n```"
-        await self.client.send_message(self.card_tzar.id, list_cards)
-        pass
+
+        if not are_cards:
+            await self.message_all_players("No cards were submitted!")
+        else:
+            await self.client.send_message(self.card_tzar.id, list_cards)
 
     async def tzar_select_message(self, msg):
         if self.get_if_authors_channel(msg) is False:
