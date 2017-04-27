@@ -205,6 +205,7 @@ class SeverGame(cah.Game):
             await self.tzar_select_message(msg)
 
     async def start_round(self):
+        self.player_cards = {}
         self.tzar_select_mode = False
 
         self.get_new_question()
