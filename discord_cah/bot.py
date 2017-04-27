@@ -165,6 +165,7 @@ class SeverGame(cah.Game):
 
         if not are_cards:
             await self.message_all_players("No cards were submitted!")
+            await self.start_round()
         else:
             await self.client.send_message(self.card_tzar.id, list_cards)
 
