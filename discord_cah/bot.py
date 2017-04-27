@@ -15,11 +15,12 @@ class SeverGame(cah.Game):
     new_round_message = ".\n\n----------------NEW ROUND----------------"
     player_chose_message_content_initial = "Here's who has submitted so far:```"
 
-    def __init__(self, client, channel_id, reg_msg_method=True, *args, **kwargs):
+    def __init__(self, client, channel_id, game_end_callback=None, reg_msg_method=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.client = client
         self.channel_id = channel_id
+        self.game_end_callback = game_end_callback
 
         if reg_msg_method:
             self.on_message = self.client.event(self.on_message)
@@ -28,6 +29,9 @@ class SeverGame(cah.Game):
 
         self.player_chose_message = None
         self.player_chose_message_content = None
+
+    async def end(self):
+        await self.game_end_callback(self)
 
     def dereg_on_message(self):
         delattr(self.client, self.on_message.__name__)
@@ -239,6 +243,7 @@ class SeverGame(cah.Game):
 
         if len(self.player_cards) == 0:
             await self.message_all_players("No cards were submitted! Leaving.")
+            await self.end()
             return
 
         print("EVERYONE")
@@ -266,13 +271,13 @@ class SeverGame(cah.Game):
         await self.start_round()
 
     @classmethod
-    def create_session(cls, client, invoke_msg):
+    def create_session(cls, client, invoke_msg, game_end_callback=None):
         """Create game session from a channel."""
         channel = invoke_msg.channel
 
         if type(channel) == discord.channel.PrivateChannel:
             client.send_message(invoke_msg.channel, "I'm afraid you can't start a fantastical game by yourself. Sorry.")
         else:
-            g = cls(client, invoke_msg.channel.id, reg_msg_method=False)
+            g = cls(client, invoke_msg.channel.id, game_end_callback, reg_msg_method=False)
         client.loop.create_task(g.run())
         return g
