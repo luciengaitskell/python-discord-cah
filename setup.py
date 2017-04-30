@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = "v1.5"
+VERSION = "v1.6"
 CAH_VERSION = 1.4
 
 setup(name='python-discord-cah',
