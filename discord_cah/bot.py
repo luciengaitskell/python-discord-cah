@@ -22,6 +22,8 @@ class SeverGame(cah.Game):
         self.channel_id = channel_id
         self.game_end_callback = game_end_callback
 
+        self.alive = True
+
         if reg_msg_method:
             self.on_message = self.client.event(self.on_message)
 
@@ -31,6 +33,7 @@ class SeverGame(cah.Game):
         self.player_chose_message_content = None
 
     async def end(self):
+        self.alive = False
         await self.game_end_callback(self)
 
     def dereg_on_message(self):
@@ -52,6 +55,10 @@ class SeverGame(cah.Game):
         old_wait_left = None
         while True:
             wait_left = wait_amt - (time.time() - wait_start)
+
+            if not self.alive:
+                await self.client.edit_message(msg, new_content=match_join_message + " [CANCELED]")
+                break
 
             # Triggers if the time block has changed (each are "wait_update_del" in size)
             #   so the timer should be updated:
@@ -238,7 +245,7 @@ class SeverGame(cah.Game):
         ply_test_arr = self.players[:]
         del (ply_test_arr[ply_test_arr.index(self.card_tzar)])
         while ((time.time()-start_time) < wait_time and
-                not all(x in list(self.player_cards.keys()) for x in ply_test_arr)):
+                not all(x in list(self.player_cards.keys()) for x in ply_test_arr) and self.alive):
             print("wait")
             await asyncio.sleep(2)
 
@@ -258,6 +265,9 @@ class SeverGame(cah.Game):
 
         # Send initial game message:
         init_msg = await self.ask_and_wait()
+
+        if not self.alive:
+            return
 
         users_player = await message.get_react_users(self.client, init_msg)
         for p in users_player:
