@@ -266,6 +266,7 @@ class SeverGame(cah.Game):
         if num_plyr < MIN_PLAYERS:
             await self.client.send_message(discord.Object(id=self.channel_id),
                                            "Not enough players ({} < {}).".format(num_plyr, MIN_PLAYERS))
+            await self.end()
             return
 
         await self.start_round()
