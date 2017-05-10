@@ -32,6 +32,8 @@ class SeverGame(cah.Game):
         self.player_chose_message = None
         self.player_chose_message_content = None
 
+        self.round_messages = []
+
     async def end(self):
         self.alive = False
         await self.game_end_callback(self)
@@ -41,13 +43,18 @@ class SeverGame(cah.Game):
 
     async def message_all_players(self, msg_content):
         for p in self.players:
-            await self.client.send_message(p.id, msg_content)
+            await self.send_message(p.id, msg_content)
+
+    async def send_message(self, *args, **kwargs):
+        msg = await self.client.send_message(*args, **kwargs)
+        self.round_messages.append(msg)
+        return msg
 
     async def ask_and_wait(self):
         match_join_message = ("It's time to play some CAH!" +
                               " React to this message, if you would like to play.")
 
-        msg = await self.client.send_message(discord.Object(id=self.channel_id), match_join_message)
+        msg = await self.send_message(discord.Object(id=self.channel_id), match_join_message)
 
         wait_update_del = 5
         wait_amt = 20
@@ -87,7 +94,7 @@ class SeverGame(cah.Game):
                 for i, c in enumerate(p.cards):
                     msg += str(i) + ". " + str(p.cards[c]) + "\n"
                 msg += "```"
-            await self.client.send_message(u, content=msg)
+            await self.send_message(u, content=msg)
 
     @staticmethod
     def get_if_authors_channel(msg):
@@ -106,7 +113,7 @@ class SeverGame(cah.Game):
             choice = int(content)
         except ValueError:
             # Was not integer, warn player:
-            await self.client.send_message(msg.channel, "Please try again.")
+            await self.send_message(msg.channel, "Please try again.")
             return None
         return choice
 
@@ -146,13 +153,13 @@ class SeverGame(cah.Game):
             # Get card_content and card_id:
             card_id = list(ply.cards.keys())[choice]
         except IndexError:
-            await self.client.send_message(msg.channel, "Out of range. Please try again.")
+            await self.send_message(msg.channel, "Out of range. Please try again.")
             return
 
         card_content = ply.select_card(card_id)
 
         # Tell user what card was selected:
-        await self.client.send_message(msg.channel, "You selected {}: {} ({})".format(choice, card_content, card_id))
+        await self.send_message(msg.channel, "You selected {}: {} ({})".format(choice, card_content, card_id))
 
         # Add card to player_cards dict:
         self.player_cards[ply] = card_content
@@ -180,7 +187,7 @@ class SeverGame(cah.Game):
             await self.message_all_players("No cards were submitted!")
             await self.start_round()
         else:
-            await self.client.send_message(self.card_tzar.id, list_cards)
+            await self.send_message(self.card_tzar.id, list_cards)
 
     async def tzar_select_message(self, msg):
         if self.get_if_authors_channel(msg) is False:
@@ -197,7 +204,7 @@ class SeverGame(cah.Game):
         try:
             plyr = list(self.player_cards.keys())[choice]
         except IndexError:
-            await self.client.send_message(msg.channel, "Out of range. Please try again.")
+            await self.send_message(msg.channel, "Out of range. Please try again.")
             return
 
         crd = self.player_cards[plyr]
@@ -227,7 +234,7 @@ class SeverGame(cah.Game):
         self.card_tzar = random.choice(self.players)
 
         # Send new round message content
-        await self.client.send_message(discord.Object(id=self.channel_id), self.new_round_message)
+        await self.send_message(discord.Object(id=self.channel_id), self.new_round_message)
         await self.message_all_players(self.new_round_message)
 
         initial_msg = "'{}' is the card tzar.\n".format(self.card_tzar.id.name)
@@ -235,8 +242,8 @@ class SeverGame(cah.Game):
         await self.message_all_players(initial_msg)
 
         self.player_chose_message_content = self.player_chose_message_content_initial
-        self.player_chose_message = await self.client.send_message(discord.Object(id=self.channel_id),
-                                                                   self.player_chose_message_content + "\nNone...```")
+        self.player_chose_message = await self.send_message(discord.Object(id=self.channel_id),
+                                                            self.player_chose_message_content + "\nNone...```")
 
         await self.send_player_cards()
 
@@ -276,8 +283,8 @@ class SeverGame(cah.Game):
 
         num_plyr = len(self.players)
         if num_plyr < MIN_PLAYERS:
-            await self.client.send_message(discord.Object(id=self.channel_id),
-                                           "Not enough players ({} < {}).".format(num_plyr, MIN_PLAYERS))
+            await self.send_message(discord.Object(id=self.channel_id),
+                                    "Not enough players ({} < {}).".format(num_plyr, MIN_PLAYERS))
             await self.end()
             return
 
