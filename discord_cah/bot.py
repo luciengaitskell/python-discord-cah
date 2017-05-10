@@ -218,6 +218,7 @@ class SeverGame(cah.Game):
 
         await self.message_all_players("Winner '{}': `{}`.".format(plyr.id.name, crd))
 
+        await asyncio.sleep(5)
         await self.end_round()
         await self.start_round()
 
