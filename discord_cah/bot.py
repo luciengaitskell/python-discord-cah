@@ -125,8 +125,9 @@ class SeverGame(cah.Game):
         if self.get_if_authors_channel(msg) is False:
                 return
 
-        # Exit if the author is this client or not a player:
-        if author == self.client.user or not any(x.id == author for x in self.players):
+        # Exit if the author is this client or not a player or is card tzar:
+        if author == self.client.user or not any(x.id == author for x in self.players)\
+                or msg.author == self.card_tzar.id:
             return
 
         # Get first player in list with the message author object as its id:
