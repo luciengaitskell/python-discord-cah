@@ -251,8 +251,14 @@ class SeverGame(cah.Game):
         await self.message_all_players(initial_msg)
 
         self.player_chose_message_content = self.player_chose_message_content_initial
-        self.player_chose_message = await self.send_message(discord.Object(id=self.channel_id),
-                                                            self.player_chose_message_content + "\nNone...```")
+        curr_player_chose_message_content = self.player_chose_message_content + "\nNone...```"
+
+        # If the message has not been created yet:
+        if self.player_chose_message is None:
+            self.player_chose_message = await self.client.send_message(discord.Object(id=self.channel_id),
+                                                                       curr_player_chose_message_content)
+        else:  # If the message has already been created:
+            await self.client.edit_message(self.player_chose_message, curr_player_chose_message_content)
 
         await self.send_player_cards()
 
