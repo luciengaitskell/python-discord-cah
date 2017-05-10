@@ -36,6 +36,7 @@ class SeverGame(cah.Game):
 
     async def end(self):
         self.alive = False
+        await self.end_round()
         await self.game_end_callback(self)
 
     def dereg_on_message(self):
@@ -217,6 +218,7 @@ class SeverGame(cah.Game):
 
         await self.message_all_players("Winner '{}': `{}`.".format(plyr.id.name, crd))
 
+        await self.end_round()
         await self.start_round()
 
     async def on_message(self, msg):
@@ -224,6 +226,12 @@ class SeverGame(cah.Game):
             await self.card_selection_message(msg)
         else:
             await self.tzar_select_message(msg)
+
+    async def end_round(self):
+        print("END")
+        for msg in self.round_messages:
+            self.client.loop.create_task(self.client.delete_message(msg))
+        self.round_messages = []
 
     async def start_round(self):
         self.player_cards = {}
