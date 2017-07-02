@@ -210,8 +210,6 @@ class SeverGame(cah.Game):
 
         crd = self.player_cards[plyr]
 
-        del(self.player_cards[plyr])
-
         plyr.add_win(crd, plyr, self.player_cards)
 
         self.player_cards = {}
