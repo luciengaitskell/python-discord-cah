@@ -190,6 +190,17 @@ class SeverGame(cah.Game):
         else:
             await self.send_message(self.card_tzar.id, list_cards)
 
+            start_time = time.time()
+            wait_time = 60  # seconds
+
+            while ((time.time() - start_time) < wait_time and
+                    self.tzar_select_mode and self.alive):
+                await asyncio.sleep(2)
+
+            if self.tzar_select_mode:  # If still waiting for tzar
+                await self.message_all_players("No card was selected by Tzar! Leaving.")
+                await self.end()
+
     async def tzar_select_message(self, msg):
         if self.get_if_authors_channel(msg) is False:
             return
@@ -207,6 +218,8 @@ class SeverGame(cah.Game):
         except IndexError:
             await self.send_message(msg.channel, "Out of range. Please try again.")
             return
+
+        self.tzar_select_mode = False
 
         crd = self.player_cards[plyr]
 
@@ -276,8 +289,8 @@ class SeverGame(cah.Game):
             return
 
         print("EVERYONE")
-        await self.start_tzar_select_mode()
         self.tzar_select_mode = True
+        await self.start_tzar_select_mode()
         print("finish")
 
     async def run(self):
