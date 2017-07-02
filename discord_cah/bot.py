@@ -37,6 +37,7 @@ class SeverGame(cah.Game):
     async def end(self):
         self.alive = False
         await self.end_round()
+        await self.client.delete_message(self.player_chose_message)
         await self.game_end_callback(self)
 
     def dereg_on_message(self):
