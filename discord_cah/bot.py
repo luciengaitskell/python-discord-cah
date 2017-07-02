@@ -274,7 +274,7 @@ class SeverGame(cah.Game):
         await self.send_player_cards()
 
         start_time = time.time()
-        wait_time = 30  # seconds
+        wait_time = 45  # seconds
 
         ply_test_arr = self.players[:]
         del (ply_test_arr[ply_test_arr.index(self.card_tzar)])
