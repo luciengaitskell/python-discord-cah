@@ -218,7 +218,7 @@ class SeverGame(cah.Game):
 
         await asyncio.sleep(5)
         await self.end_round()
-        await self.start_round()
+        self.client.loop.create_task(self.start_round())
 
     async def on_message(self, msg):
         if not self.tzar_select_mode:
@@ -301,7 +301,7 @@ class SeverGame(cah.Game):
             await self.end()
             return
 
-        await self.start_round()
+        self.client.loop.create_task(self.start_round())
 
     @classmethod
     def create_session(cls, client, invoke_msg, game_end_callback=None):
