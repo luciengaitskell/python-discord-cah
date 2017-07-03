@@ -94,6 +94,9 @@ class SeverGame(cah.Game):
                 # Update the current time block:
                 old_wait_left = math.floor(wait_left / wait_update_del)
                 msg = await self.safe_edit_message(msg, new_content=match_join_message + " T-" + str(math.ceil(wait_left)))
+                if msg is None:
+                    await self.end()
+                    return
 
             if wait_left <= 0:
                 break
