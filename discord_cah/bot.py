@@ -37,7 +37,7 @@ class SeverGame(cah.Game):
     async def end(self):
         self.alive = False
         await self.end_round()
-        await self.client.delete_message(self.player_chose_message)
+        await self.safe_delete_message(self.player_chose_message)
         await self.game_end_callback(self)
 
     def dereg_on_message(self):
@@ -46,6 +46,25 @@ class SeverGame(cah.Game):
     async def message_all_players(self, msg_content):
         for p in self.players:
             await self.send_message(p.id, msg_content)
+
+    async def safe_delete_message(self, msg):
+        try:
+            return await self.client.delete_message(msg)
+        except (AttributeError, discord.errors.NotFound):
+            return None
+
+    async def safe_edit_message(self, msg, new_content):
+        try:
+            return await self.client.edit_message(msg, new_content)
+        except (AttributeError, discord.errors.NotFound):
+            return None
+
+    async def update_channel_message(self, msg, new_content):
+        # Attempt to edit message
+        msg = await self.safe_edit_message(msg, new_content)
+        if msg is None:
+            msg = await self.client.send_message(discord.Object(id=self.channel_id), new_content)
+        return msg
 
     async def send_message(self, *args, **kwargs):
         msg = await self.client.send_message(*args, **kwargs)
@@ -66,7 +85,7 @@ class SeverGame(cah.Game):
             wait_left = wait_amt - (time.time() - wait_start)
 
             if not self.alive:
-                await self.client.edit_message(msg, new_content=match_join_message + " [CANCELED]")
+                await self.safe_edit_message(msg, new_content=match_join_message + " [CANCELED]")
                 break
 
             # Triggers if the time block has changed (each are "wait_update_del" in size)
@@ -74,7 +93,7 @@ class SeverGame(cah.Game):
             if not old_wait_left == math.floor(wait_left / wait_update_del):
                 # Update the current time block:
                 old_wait_left = math.floor(wait_left / wait_update_del)
-                msg = await self.client.edit_message(msg, new_content=match_join_message + " T-" + str(math.ceil(wait_left)))
+                msg = await self.safe_edit_message(msg, new_content=match_join_message + " T-" + str(math.ceil(wait_left)))
 
             if wait_left <= 0:
                 break
@@ -168,7 +187,8 @@ class SeverGame(cah.Game):
 
         self.player_chose_message_content += "\n" + author.name
         try:
-            await self.client.edit_message(self.player_chose_message, new_content=self.player_chose_message_content + "```")
+            await self.safe_edit_message(self.player_chose_message,
+                                         new_content=self.player_chose_message_content+ "```")
         except discord.errors.NotFound:
             print("Error updating player list message.")
 
@@ -243,7 +263,7 @@ class SeverGame(cah.Game):
     async def end_round(self):
         print("END")
         for msg in self.round_messages:
-            self.client.loop.create_task(self.client.delete_message(msg))
+            self.client.loop.create_task(self.safe_delete_message(msg))
         self.round_messages = []
 
     async def start_round(self):
@@ -265,12 +285,8 @@ class SeverGame(cah.Game):
         self.player_chose_message_content = self.player_chose_message_content_initial
         curr_player_chose_message_content = self.player_chose_message_content + "\nNone...```"
 
-        # If the message has not been created yet:
-        if self.player_chose_message is None:
-            self.player_chose_message = await self.client.send_message(discord.Object(id=self.channel_id),
-                                                                       curr_player_chose_message_content)
-        else:  # If the message has already been created:
-            await self.client.edit_message(self.player_chose_message, curr_player_chose_message_content)
+        self.player_chose_message = await self.update_channel_message(self.player_chose_message,
+                                                                      curr_player_chose_message_content)
 
         await self.send_player_cards()
 
