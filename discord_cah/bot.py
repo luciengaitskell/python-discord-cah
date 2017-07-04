@@ -32,12 +32,15 @@ class SeverGame(cah.Game):
         self.player_chose_message = None
         self.player_chose_message_content = None
 
+        self.scoreboard_message = None
+
         self.round_messages = []
 
     async def end(self):
         self.alive = False
         await self.end_round()
         await self.safe_delete_message(self.player_chose_message)
+        await self.safe_delete_message(self.scoreboard_message)
         await self.game_end_callback(self)
 
     def dereg_on_message(self):
@@ -104,6 +107,16 @@ class SeverGame(cah.Game):
             await asyncio.sleep(wait_update_del)
 
         return msg
+
+    async def update_scoreboard(self):
+        msg = "Scores so far:```"
+        for p in self.players:
+            uname = p.id.name
+            win_num = len(p.wins)
+            msg += "\n{}: {}".format(uname, win_num)
+        msg += "```"
+
+        self.scoreboard_message = await self.update_channel_message(self.scoreboard_message, msg)
 
     async def send_player_cards(self):
         self.deal_cards()
@@ -270,6 +283,8 @@ class SeverGame(cah.Game):
         self.round_messages = []
 
     async def start_round(self):
+        await self.update_scoreboard()
+
         self.player_cards = {}
         self.tzar_select_mode = False
 
